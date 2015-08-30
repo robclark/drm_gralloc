@@ -129,6 +129,8 @@ static int drm_mod_lock(const gralloc_module_t *mod, buffer_handle_t handle,
 	struct gralloc_drm_bo_t *bo;
 	int err;
 
+	LOGHDL(gralloc_drm_handle(handle));
+
 	bo = gralloc_drm_bo_from_handle(handle);
 	if (!bo)
 		return -EINVAL;
@@ -140,6 +142,8 @@ static int drm_mod_unlock(const gralloc_module_t *mod, buffer_handle_t handle)
 {
 	struct drm_module_t *dmod = (struct drm_module_t *) mod;
 	struct gralloc_drm_bo_t *bo;
+
+	LOGHDL(gralloc_drm_handle(handle));
 
 	bo = gralloc_drm_bo_from_handle(handle);
 	if (!bo)
@@ -163,6 +167,8 @@ static int drm_mod_free_gpu0(alloc_device_t *dev, buffer_handle_t handle)
 {
 	struct drm_module_t *dmod = (struct drm_module_t *) dev->common.module;
 	struct gralloc_drm_bo_t *bo;
+
+	LOGHDL(gralloc_drm_handle(handle));
 
 	bo = gralloc_drm_bo_from_handle(handle);
 	if (!bo)
@@ -201,6 +207,8 @@ static int drm_mod_alloc_gpu0(alloc_device_t *dev,
 	*handle = gralloc_drm_bo_get_handle(bo, stride);
 	/* in pixels */
 	*stride /= bpp;
+
+	LOGHDL(gralloc_drm_handle(*handle));
 
 	return 0;
 }
@@ -253,6 +261,8 @@ static int drm_mod_post_fb0(struct framebuffer_device_t *fb,
 {
 	struct drm_module_t *dmod = (struct drm_module_t *) fb->common.module;
 	struct gralloc_drm_bo_t *bo;
+
+	LOGHDL(gralloc_drm_handle(handle));
 
 	bo = gralloc_drm_bo_from_handle(handle);
 	if (!bo)

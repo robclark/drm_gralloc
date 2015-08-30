@@ -71,6 +71,18 @@ static inline struct gralloc_drm_handle_t *gralloc_drm_handle(buffer_handle_t _h
 	return handle;
 }
 
+static inline void __log_handle(struct gralloc_drm_handle_t *hdl, const char *func, int line)
+{
+	if (hdl) {
+		ALOGE("%s:%d handle=%p, name=%d, prime_fd=%d, data_owner=%d, %dx%d (0x%x), data=%p\n",
+				func, line, hdl, hdl->name, hdl->prime_fd, hdl->data_owner,
+				hdl->width, hdl->height, hdl->format, hdl->data);
+	} else {
+		ALOGE("%s:%d: null handle\n", func, line);
+	}
+}
+#define LOGHDL(hdl) __log_handle(hdl, __func__, __LINE__)
+
 #ifdef __cplusplus
 }
 #endif

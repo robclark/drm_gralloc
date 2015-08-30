@@ -204,6 +204,8 @@ static struct gralloc_drm_bo_t *validate_handle(buffer_handle_t _handle,
 	if (!handle)
 		return NULL;
 
+	LOGHDL(handle);
+
 	/* the buffer handle is passed to a new process */
 	if (unlikely(handle->data_owner != gralloc_drm_pid)) {
 		struct gralloc_drm_bo_t *bo;
@@ -240,6 +242,7 @@ static struct gralloc_drm_bo_t *validate_handle(buffer_handle_t _handle,
  */
 int gralloc_drm_handle_register(buffer_handle_t handle, struct gralloc_drm_t *drm)
 {
+	LOGHDL(gralloc_drm_handle(handle));
 	return (validate_handle(handle, drm)) ? 0 : -EINVAL;
 }
 
@@ -249,6 +252,8 @@ int gralloc_drm_handle_register(buffer_handle_t handle, struct gralloc_drm_t *dr
 int gralloc_drm_handle_unregister(buffer_handle_t handle)
 {
 	struct gralloc_drm_bo_t *bo;
+
+	LOGHDL(gralloc_drm_handle(handle));
 
 	bo = validate_handle(handle, NULL);
 	if (!bo)
@@ -317,6 +322,8 @@ struct gralloc_drm_bo_t *gralloc_drm_bo_create(struct gralloc_drm_t *drm,
 	handle->data_owner = gralloc_drm_get_pid();
 	handle->data = bo;
 
+	LOGHDL(handle);
+
 	return bo;
 }
 
@@ -327,6 +334,8 @@ static void gralloc_drm_bo_destroy(struct gralloc_drm_bo_t *bo)
 {
 	struct gralloc_drm_handle_t *handle = bo->handle;
 	int imported = bo->imported;
+
+	LOGHDL(handle);
 
 	/* gralloc still has a reference */
 	if (bo->refcount)
@@ -358,6 +367,7 @@ void gralloc_drm_bo_decref(struct gralloc_drm_bo_t *bo)
  */
 struct gralloc_drm_bo_t *gralloc_drm_bo_from_handle(buffer_handle_t handle)
 {
+	LOGHDL(gralloc_drm_handle(handle));
 	return validate_handle(handle, NULL);
 }
 
@@ -374,13 +384,15 @@ buffer_handle_t gralloc_drm_bo_get_handle(struct gralloc_drm_bo_t *bo, int *stri
 int gralloc_drm_get_prime_fd(buffer_handle_t _handle)
 {
 	struct gralloc_drm_handle_t *handle = gralloc_drm_handle(_handle);
+	LOGHDL(handle);
 	return (handle) ? handle->prime_fd : -1;
 }
 
 int gralloc_drm_get_gem_handle(buffer_handle_t _handle)
 {
 	struct gralloc_drm_handle_t *handle = gralloc_drm_handle(_handle);
-	return (handle) ? handle->name : 0;
+	LOGHDL(handle);
+	return (handle) ? handle->name : -1;
 }
 
 /*
@@ -419,8 +431,10 @@ int gralloc_drm_bo_lock(struct gralloc_drm_bo_t *bo,
 	}
 
 	/* allow multiple locks with compatible usages */
-	if (bo->lock_count && (bo->locked_for & usage) != usage)
+	if (bo->lock_count && (bo->locked_for & usage) != usage) {
+		ALOGE("bo.locked_for:x%X vs usage:x%X\n", bo->locked_for, usage);
 		return -EINVAL;
+	}
 
 	usage |= bo->locked_for;
 
@@ -430,8 +444,10 @@ int gralloc_drm_bo_lock(struct gralloc_drm_bo_t *bo,
 		int write = !!(usage & GRALLOC_USAGE_SW_WRITE_MASK);
 		int err = bo->drm->drv->map(bo->drm->drv, bo,
 				x, y, w, h, write, addr);
-		if (err)
+		if (err) {
+			ALOGE("map failed: %d\n", err);
 			return err;
+		}
 	}
 	else {
 		/* kernel handles the synchronization here */

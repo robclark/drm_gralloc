@@ -193,8 +193,10 @@ static int gralloc_drm_bo_setplane(struct gralloc_drm_t *drm,
 	struct gralloc_drm_bo_t *bo = NULL;
 	int err;
 
-	if (plane->handle)
+	if (plane->handle) {
+		LOGHDL(gralloc_drm_handle(plane->handle));
 		bo = gralloc_drm_bo_from_handle(plane->handle);
+	}
 
 	// create a framebuffer if does not exist
 	if (bo && bo->fb_id == 0) {

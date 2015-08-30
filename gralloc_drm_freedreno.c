@@ -32,6 +32,7 @@
 #include <cutils/log.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <assert.h>
 #include <drm.h>
 #include <freedreno_drmif.h>
 
