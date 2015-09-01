@@ -415,7 +415,7 @@ static int pipe_init_screen(struct pipe_manager *pm)
 	struct pipe_screen *screen;
 
 #ifdef ENABLE_PIPE_FREEDRENO
-	if (strcmp(pm->driver, "msm"))
+	if (strcmp(pm->driver, "msm") == 0)
 		screen = fd_drm_screen_create(pm->fd);
 	else
 #endif
