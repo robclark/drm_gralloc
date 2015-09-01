@@ -163,9 +163,21 @@ static int fd_map(struct gralloc_drm_drv_t *drv,
 		int enable_write, void **addr)
 {
 	struct fd_buffer *fd_buf = (struct fd_buffer *) bo;
-	if (*addr = fd_bo_map(fd_buf->bo)) {
+	uint32_t flags = DRM_FREEDRENO_PREP_READ;
+
+	if (enable_write)
+		flags |= DRM_FREEDRENO_PREP_WRITE;
+
+	/* NOTE: pipe arg is only required for kgsl backend of
+	 * libdrm_freedreno (which only supports x11, no kms,
+	 * so impossible to use drm_gralloc with.. so we can
+	 * ignore pipe arg.)
+	 */
+	fd_bo_cpu_prep(fd_buf->bo, NULL, flags);
+
+	if ((*addr = fd_bo_map(fd_buf->bo))) {
 		return 0;
-        }
+	}
 
 	return -errno;
 }
@@ -173,7 +185,8 @@ static int fd_map(struct gralloc_drm_drv_t *drv,
 static void fd_unmap(struct gralloc_drm_drv_t *drv,
 		struct gralloc_drm_bo_t *bo)
 {
-	// TODO should add fd_bo_unmap() to libdrm_freedreno someday..
+	struct fd_buffer *fd_buf = (struct fd_buffer *) bo;
+	fd_bo_cpu_fini(fd_buf->bo);
 }
 
 static void fd_init_kms_features(struct gralloc_drm_drv_t *drv,
