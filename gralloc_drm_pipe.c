@@ -368,21 +368,25 @@ static void pipe_destroy(struct gralloc_drm_drv_t *drv)
 	FREE(pm);
 }
 
-/* for freedreno */
+#ifdef ENABLE_PIPE_FREEDRENO
 #include "freedreno/drm/freedreno_drm_public.h"
-/* for nouveau */
+#endif
+#ifdef ENABLE_PIPE_NOUVEAU
 #include "nouveau/drm/nouveau_drm_public.h"
-/* for r300 */
+#endif
+#ifdef ENABLE_PIPE_R300
 #include "radeon/drm/radeon_drm_public.h"
 #include "r300/r300_public.h"
-/* for r600 */
+#endif
+#ifdef ENABLE_PIPE_R600
 #include "radeon/drm/radeon_winsys.h"
 #include "r600/r600_public.h"
-/* for vmwgfx */
+#endif
+#ifdef ENABLE_PIPE_VMWGFX
 #include "svga/drm/svga_drm_public.h"
 #include "svga/svga_winsys.h"
 #include "svga/svga_public.h"
-/* for debug */
+#endif
 #include "target-helpers/inline_debug_helper.h"
 
 static int pipe_init_screen(struct pipe_manager *pm)
