@@ -26,6 +26,8 @@
 #include <cutils/log.h>
 #include <errno.h>
 
+#define _C99_MATH_H_  /* hack to avoid pulling in c99_math.h which explodes.. */
+
 #include <pipe/p_screen.h>
 #include <pipe/p_context.h>
 #include <state_tracker/drm_driver.h>

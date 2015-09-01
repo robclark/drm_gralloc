@@ -94,9 +94,23 @@ LOCAL_SHARED_LIBRARIES := \
 	libhardware_legacy \
 
 ifneq ($(filter $(freedreno_drivers), $(DRM_GPU_DRIVERS)),)
-LOCAL_SRC_FILES += gralloc_drm_freedreno.c
-LOCAL_CFLAGS += -DENABLE_FREEDRENO -DDMABUF
-LOCAL_SHARED_LIBRARIES += libdrm_freedreno
+LOCAL_SRC_FILES += gralloc_drm_pipe.c
+LOCAL_C_INCLUDES += \
+	hardware/mesa/include \
+	hardware/mesa/src \
+	hardware/mesa/src/gallium/include \
+	hardware/mesa/src/gallium/winsys \
+	hardware/mesa/src/gallium/drivers \
+	hardware/mesa/src/gallium/auxiliary
+LOCAL_STATIC_LIBRARIES += \
+	libmesa_winsys_freedreno \
+	libmesa_pipe_freedreno \
+	libmesa_glsl \
+	libmesa_gallium \
+	libmesa_st_mesa \
+	libmesa_util
+LOCAL_CFLAGS += -DENABLE_PIPE -DENABLE_PIPE_FREEDRENO -DDMABUF
+LOCAL_SHARED_LIBRARIES += libdrm_freedreno libdl
 endif
 
 ifneq ($(filter $(intel_drivers), $(DRM_GPU_DRIVERS)),)
