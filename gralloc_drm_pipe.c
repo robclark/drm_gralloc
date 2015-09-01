@@ -136,6 +136,18 @@ static struct pipe_buffer *get_pipe_buffer_locked(struct pipe_manager *pm,
 	templ.depth0 = 1;
 	templ.array_size = 1;
 
+#ifdef DMABUF
+	if (handle->prime_fd > 0) {
+		buf->winsys.type = DRM_API_HANDLE_TYPE_FD;
+		buf->winsys.handle = handle->name;
+		buf->winsys.stride = handle->stride;
+
+		buf->resource = pm->screen->resource_from_handle(pm->screen,
+				&templ, &buf->winsys);
+		if (!buf->resource)
+			goto fail;
+	}
+#else
 	if (handle->name) {
 		buf->winsys.type = DRM_API_HANDLE_TYPE_SHARED;
 		buf->winsys.handle = handle->name;
@@ -146,13 +158,18 @@ static struct pipe_buffer *get_pipe_buffer_locked(struct pipe_manager *pm,
 		if (!buf->resource)
 			goto fail;
 	}
+#endif
 	else {
 		buf->resource =
 			pm->screen->resource_create(pm->screen, &templ);
 		if (!buf->resource)
 			goto fail;
 
+#ifdef DMABUF
+		buf->winsys.type = DRM_API_HANDLE_TYPE_FD;
+#else
 		buf->winsys.type = DRM_API_HANDLE_TYPE_SHARED;
+#endif
 		if (!pm->screen->resource_get_handle(pm->screen,
 					buf->resource, &buf->winsys))
 			goto fail;
@@ -193,7 +210,11 @@ static struct gralloc_drm_bo_t *pipe_alloc(struct gralloc_drm_drv_t *drv,
 	pthread_mutex_unlock(&pm->mutex);
 
 	if (buf) {
+#ifdef DMABUF
+		handle->prime_fd = (int) buf->winsys.handle;
+#else
 		handle->name = (int) buf->winsys.handle;
+#endif
 		handle->stride = (int) buf->winsys.stride;
 
 		buf->base.handle = handle;
