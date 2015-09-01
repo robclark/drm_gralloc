@@ -93,7 +93,8 @@ fd_alloc(struct gralloc_drm_drv_t *drv, struct gralloc_drm_handle_t *handle)
 			free(fd_buf);
 			return NULL;
 		}
-        }
+		ALOGE("%s: imported, prime_fd=%d\n", __func__, handle->prime_fd);
+	}
 #else
 	if (handle->name) {
 		fd_buf->bo = fd_bo_from_name(info->dev, handle->name);
@@ -103,6 +104,7 @@ fd_alloc(struct gralloc_drm_drv_t *drv, struct gralloc_drm_handle_t *handle)
 			free(fd_buf);
 			return NULL;
 		}
+		ALOGE("%s: imported, name=%d\n", __func__, handle->name);
 	}
 #endif
 	else {
@@ -123,6 +125,7 @@ fd_alloc(struct gralloc_drm_drv_t *drv, struct gralloc_drm_handle_t *handle)
 #ifdef DMABUF
 		int fd = fd_bo_dmabuf(fd_buf->bo);
 		if(fd >= 0) {
+			ALOGE("%s: allocated, prime_fd=%d\n", __func__, fd);
 			handle->prime_fd = fd;
 		}
 		else {
@@ -131,13 +134,15 @@ fd_alloc(struct gralloc_drm_drv_t *drv, struct gralloc_drm_handle_t *handle)
 			free(fd_buf);
 			return NULL;
 		}
-#endif
+#else
 		if (fd_bo_get_name(fd_buf->bo, (uint32_t *) &handle->name)) {
 			ALOGE("failed to flink fd bo");
 			fd_bo_del(fd_buf->bo);
 			free(fd_buf);
 			return NULL;
 		}
+		ALOGE("%s: allocated, name=%d\n", __func__, handle->name);
+#endif
 
 		handle->stride = pitch;
 	}
