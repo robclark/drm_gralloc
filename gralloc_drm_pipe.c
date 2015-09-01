@@ -139,7 +139,7 @@ static struct pipe_buffer *get_pipe_buffer_locked(struct pipe_manager *pm,
 #ifdef DMABUF
 	if (handle->prime_fd > 0) {
 		buf->winsys.type = DRM_API_HANDLE_TYPE_FD;
-		buf->winsys.handle = handle->name;
+		buf->winsys.handle = handle->prime_fd;
 		buf->winsys.stride = handle->stride;
 
 		buf->resource = pm->screen->resource_from_handle(pm->screen,
