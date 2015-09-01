@@ -83,8 +83,6 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libgralloc_drm
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_CFLAGS := -std=c99
-
 LOCAL_SRC_FILES := \
 	gralloc_drm.c \
 	gralloc_drm_kms.c
@@ -124,7 +122,6 @@ LOCAL_SRC_FILES += gralloc_drm_pipe.c
 LOCAL_CFLAGS += -DENABLE_PIPE
 LOCAL_C_INCLUDES += \
 	external/mesa/include \
-	external/mesa/src \
 	external/mesa/src/gallium/include \
 	external/mesa/src/gallium/winsys \
 	external/mesa/src/gallium/drivers \
