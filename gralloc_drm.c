@@ -401,7 +401,7 @@ int gralloc_drm_get_prime_fd(buffer_handle_t _handle)
 {
 	struct gralloc_drm_handle_t *handle = gralloc_drm_handle(_handle);
 	LOGHDL(handle);
-	return (handle) ? dup(handle->prime_fd) : -1;
+	return (handle) ? handle->prime_fd : -1;
 }
 
 int gralloc_drm_get_gem_handle(buffer_handle_t _handle)
