@@ -371,8 +371,11 @@ static void gralloc_drm_bo_destroy(struct gralloc_drm_bo_t *bo)
  */
 void gralloc_drm_bo_decref(struct gralloc_drm_bo_t *bo)
 {
-	if (!--bo->refcount)
+	if (!--bo->refcount) {
+		if (bo->lock_count > 0)
+			ALOGE("ERROR, destroying locked buffer!!!\n");
 		gralloc_drm_bo_destroy(bo);
+	}
 }
 
 /*
