@@ -110,6 +110,17 @@ init_drv_from_fd(int fd)
 	return drv;
 }
 
+static int drm_debug_print(const char *format, va_list ap)
+{
+	__android_log_vprint(ANDROID_LOG_INFO, LOG_TAG, format, ap);
+	return 0;
+}
+
+
+static const drmServerInfo server_info = {
+	.debug_print = drm_debug_print,
+};
+
 /*
  * Create a DRM device object.
  */
@@ -134,6 +145,8 @@ struct gralloc_drm_t *gralloc_drm_create(void)
 		free(drm);
 		return NULL;
 	}
+
+	drmSetServerInfo(&server_info);
 
 	return drm;
 }
