@@ -139,7 +139,7 @@ static struct pipe_buffer *get_pipe_buffer_locked(struct pipe_manager *pm,
 	templ.array_size = 1;
 
 #ifdef DMABUF
-	if (handle->prime_fd > 0) {
+	if (handle->prime_fd >= 0) {
 		buf->winsys.type = DRM_API_HANDLE_TYPE_FD;
 		buf->winsys.handle = handle->prime_fd;
 		buf->winsys.stride = handle->stride;
@@ -229,6 +229,12 @@ static void pipe_free(struct gralloc_drm_drv_t *drv, struct gralloc_drm_bo_t *bo
 {
 	struct pipe_manager *pm = (struct pipe_manager *) drv;
 	struct pipe_buffer *buf = (struct pipe_buffer *) bo;
+
+#ifdef DMABUF
+	struct gralloc_drm_handle_t *handle = bo->handle;
+	close(handle->prime_fd);
+	handle->prime_fd = -1;
+#endif
 
 	pthread_mutex_lock(&pm->mutex);
 
